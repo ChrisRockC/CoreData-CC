@@ -25,6 +25,9 @@
 //获取真实文件的路劲
 - (NSURL *)applicationDocumentsDirectory;
 
+//CoreData.xcdatamodeld  就是此文件上可视化建模 
+
+
 
 @end
 
