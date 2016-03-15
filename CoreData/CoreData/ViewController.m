@@ -22,13 +22,18 @@
 
 @implementation ViewController
 - (IBAction)addEntity:(id)sender {
+   
+    [self getAllDataFromCoreData];
+}
+
+-(void)addDataToCoreData{
     //2. 添加数据
     //创建实体描述
     NSEntityDescription *perDes = [NSEntityDescription entityForName:@"Person" inManagedObjectContext:self.context];
     //实例实体
     Person *per = [[Person alloc] initWithEntity:perDes insertIntoManagedObjectContext:self.context];
     per.name = @"zhansgan ";
-    per.age = [NSNumber numberWithInt:13];
+    per.age = [NSNumber numberWithInt:arc4random()%10];
     
     //更新数据源
     [self.allData addObject:per];
@@ -46,7 +51,6 @@
     [dele saveContext];
     NSLog(@"数据持久化无问题");
 
-    
 }
 
 - (void)viewDidLoad {
@@ -63,10 +67,10 @@
     
 }
 
-
--(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
-  
-}
+//
+//-(void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+//    [self getAllDataFromCoreData];
+//}
 
 
 -(NSInteger )tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
@@ -87,6 +91,25 @@
     cell.detailTextLabel.text = [NSString stringWithFormat:@"%@",per.age];
     
     return cell;
+}
+
+//3. 查询数据
+-(void)getAllDataFromCoreData{
+    NSFetchRequest *fecthRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *des = [NSEntityDescription entityForName:@"Person" inManagedObjectContext:self.context];
+    [fecthRequest setEntity:des];
+    //设置排序
+    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"age" ascending:YES];
+    [fecthRequest setSortDescriptors:[NSArray arrayWithObjects:sort, nil]];
+    NSError *error = nil;
+    NSArray *fetchData = [self.context executeFetchRequest:fecthRequest error:&error];
+    if (fetchData == nil) {
+        NSLog(@"数据库无数据");
+    }
+    //刷新数据
+    [self.allData addObjectsFromArray:fetchData];
+    [self.tableView reloadData];
+    
 }
 
 @end
