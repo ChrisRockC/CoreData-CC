@@ -112,4 +112,38 @@
     
 }
 
+//4. 点击cell改变数据   fetch直接可以联想一大块代码 非常好用 方便记忆
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    //4.1 查询当前是哪行数据
+    NSFetchRequest *fetch = [[ NSFetchRequest alloc] init]; //抓取请求
+    
+    NSEntityDescription *des = [NSEntityDescription entityForName:@"Person" inManagedObjectContext:self.context];
+    [fetch setEntity:des];  //对哪一个实体做操作
+    
+    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey:@"age" ascending:YES]; //抓取的结果排序
+    [fetch setSortDescriptors:[NSArray arrayWithObjects:sort, nil]];
+    
+    NSError *error = nil;
+    NSArray *fetchData = [self.context executeFetchRequest:fetch error:&error];
+    
+    //4.2 创建新的数据
+    Person *person = self.allData[indexPath.row];
+    person.name = @"赵四";
+    person.age = [NSNumber numberWithInt:1000];
+    
+    
+   
+    //4.3 刷新数据源 更换数据
+    [self.allData removeAllObjects];
+    [self.allData addObjectsFromArray:fetchData];
+    [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    
+    //4.4 修改本地化
+    [self.context save:nil];
+    
+}
+
+
+
+
 @end
