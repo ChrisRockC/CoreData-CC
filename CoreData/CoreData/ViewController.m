@@ -23,7 +23,7 @@
 @implementation ViewController
 - (IBAction)addEntity:(id)sender {
    
-    [self getAllDataFromCoreData];
+    [self addDataToCoreData];
 }
 
 -(void)addDataToCoreData{
@@ -141,6 +141,18 @@
     //4.4 修改本地化
     [self.context save:nil];
     
+}
+
+//5.侧滑删除数据
+-(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath{
+    //5.1 获取当前数据
+    Person *person = self.allData[indexPath.row];
+    //5.2 本地数据源删除  刷新UI
+    [self.allData removeObject:person];
+    [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationTop];
+    //5.3 数据库删除
+    [self.context deleteObject:person];
+    [self.context save:nil];
 }
 
 
